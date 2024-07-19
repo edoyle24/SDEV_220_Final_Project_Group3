@@ -1,19 +1,25 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
-class Post(models.Model):
-    User = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    birthday = models.CharField(max_length=200)
-    email = models.CharField(max_length=200)
-    phonenumber = models.TextField()
-    created_date = models.DateTimeField(default=timezone.now)
-    scheduled_date = models.DateTimeField(blank=True, null=True)
 
-    def publish(self):
-        self.scheduled_date = timezone.now()
-        self.save()
+class Dentist(models.Model):
+    name = models.CharField(max_length=100)
+    specialization = models.CharField(max_length=100)
+    email = models.EmailField()
 
     def __str__(self):
-        return self.User
+        return self.name
+
+class Appointment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    dentist = models.ForeignKey(Dentist, on_delete=models.CASCADE)
+    date = models.DateField()
+    time = models.TimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.dentist.name} - {self.date} {self.time}"
