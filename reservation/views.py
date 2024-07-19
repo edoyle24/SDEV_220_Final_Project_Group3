@@ -26,5 +26,5 @@ def create_appointment(request):
     return render(request, 'reservations/create_appointment.html', {'form': form})
 
 def appointment_success(request):
-    return render(request, 'reservations/appointment_success.html')
+    return render(request, 'reservations/appointment_success.html', {})
 
