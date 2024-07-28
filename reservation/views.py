@@ -1,16 +1,26 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from .models import Dentist, Appointment
 from .forms import AppointmentForm
+from django.contrib.auth import logout
 
 def index(request):
-    return render(request, 'reservation/index.html', {})
+    return redirect('home')
+
+def home(request):
+    return render(request, 'reservation/home.html', {})
+
 def appointment(request):
     return render(request, 'reservation/appointment.html', {})
+
+@login_required
 def reservations(request):
-    return render(request, 'reservation/reservations.html', {})
+    posts = Appointment.objects.all()
+    return render(request, 'reservation/reservations.html', {'posts': posts})
 def staff(request):
-    return render(request, 'reservation/staff.html', {})
+    staff = Dentist.objects.all()
+    return render(request, 'reservation/staff.html', {'staff': staff})
 
 @login_required
 def create_appointment(request):
@@ -23,8 +33,25 @@ def create_appointment(request):
             return redirect('appointment_success')
     else:
         form = AppointmentForm()
-    return render(request, 'reservations/create_appointment.html', {'form': form})
+    return render(request, 'reservation/create_appointment.html', {'form': form})
 
+@login_required
 def appointment_success(request):
-    return render(request, 'reservations/appointment_success.html', {})
+    return render(request, 'reservation/appointment_success.html', {})
 
+@login_required
+def user_detail(request, pk):
+    post = get_object_or_404(Appointment, pk=pk)
+    return render(request, 'reservation/user_detail.html', {'post': post})
+
+@login_required
+def appointment_remove(request, pk):
+    post = get_object_or_404(Appointment, pk=pk)
+    if request.method=='POST':
+        post.delete()
+    return redirect('reservations')
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return render(request, 'registration/logged_out.html', {})
