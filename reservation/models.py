@@ -15,6 +15,10 @@ class Dentist(models.Model):
 
 class Appointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    fullname = models.CharField(max_length=100)
+    dob = models.DateField()
+    phone = models.CharField(max_length=12)
+    email = models.EmailField()
     dentist = models.ForeignKey(Dentist, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
